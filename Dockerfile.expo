@@ -1,0 +1,13 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install -g pnpm@10.26.1
+
+RUN pnpm install --no-frozen-lockfile
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "REACT_NATIVE_PACKAGER_HOSTNAME=$RAILWAY_PUBLIC_DOMAIN EXPO_PACKAGER_PROXY_URL=https://$RAILWAY_PUBLIC_DOMAIN pnpm --filter @workspace/aliexpress-app run start:railway"]
