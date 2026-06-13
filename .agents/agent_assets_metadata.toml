@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "bMvs-IePqbKSpJWCq6Y-X"
+uri = "file://artifacts/aliexpress-app/assets/images/icon.png"
+type = "image"
+title = "aliexpress_app_icon"
+
+[[generated]]
+id = "bUUtxtMnSZXZ50BHjHNr3"
+uri = "file://artifacts/aliexpress-app/assets/images/product1.png"
+type = "image"
+title = "wireless_earbuds_product"
+
+[[generated]]
+id = "TGksec9ru2y8gQqtCo1nA"
+uri = "file://artifacts/aliexpress-app/assets/images/product2.png"
+type = "image"
+title = "smart_watch_product"
+
+[[generated]]
+id = "VxmkIbLP0XjEz7H4c08IU"
+uri = "file://artifacts/aliexpress-app/assets/images/product3.png"
+type = "image"
+title = "led_desk_lamp_product"

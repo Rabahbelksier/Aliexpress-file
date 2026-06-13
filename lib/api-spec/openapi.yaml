@@ -1,0 +1,261 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: devices
+    description: Device registry operations
+  - name: relay
+    description: File relay operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /devices/register:
+    post:
+      operationId: registerDevice
+      tags: [devices]
+      summary: Register a device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterDeviceRequest"
+      responses:
+        "200":
+          description: Device registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /devices:
+    get:
+      operationId: listDevices
+      tags: [devices]
+      summary: List active devices
+      responses:
+        "200":
+          description: List of devices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceList"
+  /devices/{deviceId}/unregister:
+    delete:
+      operationId: unregisterDevice
+      tags: [devices]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Unregister a device
+      responses:
+        "200":
+          description: Device unregistered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /relay/request:
+    post:
+      operationId: sendRelayRequest
+      tags: [relay]
+      summary: Send file relay request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RelayRequest"
+      responses:
+        "200":
+          description: Request queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RelayRequestResult"
+  /relay/pending/{deviceId}:
+    get:
+      operationId: getPendingRequests
+      tags: [relay]
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get pending requests for a device
+      responses:
+        "200":
+          description: Pending requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingRequests"
+  /relay/respond:
+    post:
+      operationId: respondToRelay
+      tags: [relay]
+      summary: Respond to a relay request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RelayResponse"
+      responses:
+        "200":
+          description: Response stored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /relay/result/{requestId}:
+    get:
+      operationId: getRelayResult
+      tags: [relay]
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get relay result
+      responses:
+        "200":
+          description: Relay result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RelayResult"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    SuccessResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required:
+        - ok
+    RegisterDeviceRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+      required:
+        - deviceId
+        - deviceName
+    Device:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        lastSeen:
+          type: number
+      required:
+        - deviceId
+        - deviceName
+        - lastSeen
+    DeviceList:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"
+      required:
+        - devices
+    RelayRequest:
+      type: object
+      properties:
+        requestId:
+          type: string
+        targetDeviceId:
+          type: string
+        requesterId:
+          type: string
+        type:
+          type: string
+          enum: [LIST, GET]
+        path:
+          type: string
+      required:
+        - requestId
+        - targetDeviceId
+        - requesterId
+        - type
+        - path
+    RelayRequestResult:
+      type: object
+      properties:
+        requestId:
+          type: string
+        ok:
+          type: boolean
+      required:
+        - requestId
+        - ok
+    PendingRequests:
+      type: object
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelayRequest"
+      required:
+        - requests
+    RelayResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        data:
+          type: string
+        error:
+          type: string
+      required:
+        - requestId
+        - data
+    RelayResult:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        data:
+          type: string
+        error:
+          type: string
+      required:
+        - ready
+        - data
